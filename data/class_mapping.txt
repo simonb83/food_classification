@@ -1,0 +1,1 @@
+{"hamburger": 6, "guacamole": 3, "apple_pie": 4, "cheesecake": 5, "french_toast": 2, "chocolate_cake": 9, "pork_chop": 0, "lasagna": 1, "carrot_cake": 8, "fried_rice": 7, "steak": 10, "pizza": 11}
