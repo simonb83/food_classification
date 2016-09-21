@@ -8,6 +8,7 @@ Setting 'mode' flag to train will download:
 Setting 'mode' flag to test will download:
 - Resized images for relevant food classes (all as 256 x 256 pixels)
 - Fine-tuned Alexnet model weights
+- Mean image binaryproto used during training
 
 """
 
@@ -22,6 +23,8 @@ import tarfile
 parser = argparse.ArgumentParser()
 parser.add_argument("-m", "--mode", help="TRAIN or TEST mode. Setting flag to TRAIN will choose pre-trained model weights to be used in fine-tuning. Setting flag to TEST will choose fine-tuned model weights for testing purposes.")
 args = parser.parse_args()
+
+mode = args.mode
 
 def reporthook(count, block_size, total_size):
     """
@@ -83,9 +86,9 @@ images_filename = os.path.join('data/', 'resized.tar.gz')
 images_sha1 = "adedce9915537851111c9b3a35df809568201753"
 
 if os.path.exists(images_filename) and check_model(images_filename, images_sha1):
-    print("Model already exists.")
+    print("Images already downloaded.")
     sys.exit(0)
-    # Else download model
+    # Else download images
 else:
     urllib.urlretrieve(images_url, images_filename, reporthook)
     if not check_model(images_filename, images_sha1):
@@ -95,3 +98,13 @@ else:
         tar = tarfile.open(images_filename, "r:gz")
         tar.extractall()
         tar.close()
+
+# Download mean image
+mean_image_url = "https://s3-us-west-1.amazonaws.com/simon.bedford/food_classification/alexnet_4_mean.binaryproto"
+
+if mode == 'TEST':
+    if os.path.exists('data/alexnet_4_mean.binaryproto'):
+        print("Mean file already downloaded.")
+        sys.exit(0)
+    else:
+        urllib.urlretrieve(mean_image_url, 'data/alexnet_4_mean.binaryproto', reporthook)

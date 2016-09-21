@@ -112,3 +112,33 @@ python run_predict.py
 ~~~~
 
 To visualize predictions, use the visualize.ipynb notebook.
+
+
+#### Making New Predictions:
+
+The model can also be used for making predictions on new images.
+
+Requirements:
+
+1. If you have not already done so, download data with TEST flag:
+
+~~~~
+python get_data.py -m TEST
+~~~~
+
+2. Convert mean image:
+
+~~~~
+python convert_mean.py -m data/alexnet_4_mean.binaryproto
+~~~~
+
+3. Add some images to the `'data/images'` directory; the expected image format is jpg.
+
+4. From the root directory run the prediction script, with `-m 0` for GPU, `-m -1` for CPU:
+
+~~~~
+python predict_new.py -m 0
+~~~~
+
+5. The predictions will be output to `'data/images/predictions.txt'`
+
