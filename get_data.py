@@ -20,11 +20,6 @@ import time
 import hashlib
 import tarfile
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-m", "--mode", help="TRAIN or TEST mode. Setting flag to TRAIN will choose pre-trained model weights to be used in fine-tuning. Setting flag to TEST will choose fine-tuned model weights for testing purposes.")
-args = parser.parse_args()
-
-mode = args.mode
 
 def reporthook(count, block_size, total_size):
     """
@@ -39,8 +34,9 @@ def reporthook(count, block_size, total_size):
     speed = int(progress_size / (1024 * duration))
     percent = int(count * block_size * 100 / total_size)
     sys.stdout.write("\r...%d%%, %d MB, %d KB/s, %d seconds passed" %
-                    (percent, progress_size / (1024 * 1024), speed, duration))
+                     (percent, progress_size / (1024 * 1024), speed, duration))
     sys.stdout.flush()
+
 
 def check_model(filename, sha1):
     """
@@ -66,45 +62,54 @@ caffe_file = {
     'TEST': '_iter_5000.caffemodel'
 }
 
-# Download model
-filename = caffe_file[mode]
-model_filename = os.path.join('model/', filename)
+if __name__ == "__main__":
 
-if os.path.exists(model_filename) and check_model(model_filename, model_sha1[mode]):
-    print("Model already exists.")
-    sys.exit(0)
-    # Else download model
-else:
-    urllib.urlretrieve(model_urls[mode], model_filename, reporthook)
-    if not check_model(model_filename, model_sha1[mode]):
-        print("Model did not download correctly. Try again.")
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", help="TRAIN or TEST mode. Setting flag to TRAIN will choose pre-trained model weights to be used in fine-tuning. Setting flag to TEST will choose fine-tuned model weights for testing purposes.")
+    args = parser.parse_args()
 
-# Download images
-images_url = "https://s3-us-west-1.amazonaws.com/simon.bedford/food_classification/resized.tar.gz"
-images_filename = os.path.join('data/', 'resized.tar.gz')
-images_sha1 = "adedce9915537851111c9b3a35df809568201753"
+    mode = args.mode
 
-if os.path.exists(images_filename) and check_model(images_filename, images_sha1):
-    print("Images already downloaded.")
-    sys.exit(0)
-    # Else download images
-else:
-    urllib.urlretrieve(images_url, images_filename, reporthook)
-    if not check_model(images_filename, images_sha1):
-        print("Images did not download correctly. Try again.")
-        sys.exit(1)
-    else:
-        tar = tarfile.open(images_filename, "r:gz")
-        tar.extractall()
-        tar.close()
+    # Download model
+    filename = caffe_file[mode]
+    model_filename = os.path.join('model/', filename)
 
-# Download mean image
-mean_image_url = "https://s3-us-west-1.amazonaws.com/simon.bedford/food_classification/alexnet_4_mean.binaryproto"
-
-if mode == 'TEST':
-    if os.path.exists('data/alexnet_4_mean.binaryproto'):
-        print("Mean file already downloaded.")
+    if os.path.exists(model_filename) and check_model(model_filename, model_sha1[mode]):
+        print("Model already exists.")
         sys.exit(0)
+        # Else download model
     else:
-        urllib.urlretrieve(mean_image_url, 'data/alexnet_4_mean.binaryproto', reporthook)
+        urllib.urlretrieve(model_urls[mode], model_filename, reporthook)
+        if not check_model(model_filename, model_sha1[mode]):
+            print("Model did not download correctly. Try again.")
+            sys.exit(1)
+
+    # Download images
+    images_url = "https://s3-us-west-1.amazonaws.com/simon.bedford/food_classification/resized.tar.gz"
+    images_filename = os.path.join('data/', 'resized.tar.gz')
+    images_sha1 = "adedce9915537851111c9b3a35df809568201753"
+
+    if os.path.exists(images_filename) and check_model(images_filename, images_sha1):
+        print("Images already downloaded.")
+        sys.exit(0)
+        # Else download images
+    else:
+        urllib.urlretrieve(images_url, images_filename, reporthook)
+        if not check_model(images_filename, images_sha1):
+            print("Images did not download correctly. Try again.")
+            sys.exit(1)
+        else:
+            tar = tarfile.open(images_filename, "r:gz")
+            tar.extractall()
+            tar.close()
+
+    # Download mean image
+    mean_image_url = "https://s3-us-west-1.amazonaws.com/simon.bedford/food_classification/alexnet_4_mean.binaryproto"
+
+    if mode == 'TEST':
+        if os.path.exists('data/alexnet_4_mean.binaryproto'):
+            print("Mean file already downloaded.")
+            sys.exit(0)
+        else:
+            urllib.urlretrieve(
+                mean_image_url, 'data/alexnet_4_mean.binaryproto', reporthook)
