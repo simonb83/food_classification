@@ -12,20 +12,22 @@ import os
 import numpy as np
 import re
 
+if __name__ == "__main__":
 
-parser = argparse.ArgumentParser(description='make predictions')
-parser.add_argument("-m", "--mean_file",, type=str, nargs=1,
-    help='Path to mean image binary proto')
+    parser = argparse.ArgumentParser(description='make predictions')
+    parser.add_argument("-m", "--mean_file", type=str, nargs=1,
+                        help='Path to mean image binary proto')
 
-args = parser.parse_args()
-mean_file = args.mean_file[0]
+    args = parser.parse_args()
+    mean_file = args.mean_file[0]
 
-blob = caffe.proto.caffe_pb2.BlobProto()
-data = open(mean_file, "rb").read()
-blob.ParseFromString(data)
-arr = np.array( caffe.io.blobproto_to_array(blob))
+    blob = caffe.proto.caffe_pb2.BlobProto()
+    with open(mean_file, "rb") as f:
+        data = f.read()
+    blob.ParseFromString(data)
+    arr = np.array(caffe.io.blobproto_to_array(blob))
 
-file_name = re.findall(r'\/(\w+)\.binaryproto', mean_file)[0]
-file_path = re.findall(r'(.+)\/\w+.binaryproto', mean_file)[0]
+    file_name = re.findall(r'\/(\w+)\.binaryproto', mean_file)[0]
+    file_path = re.findall(r'(.+)\/\w+.binaryproto', mean_file)[0]
 
-np.save(os.path.join(file_path, file_name + ".npy"), arr[0])
+    np.save(os.path.join(file_path, file_name + ".npy"), arr[0])

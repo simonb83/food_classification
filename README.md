@@ -4,8 +4,13 @@ This repository contains code for fine-tuning a Convolutional Neural Network in 
 
 ## Dependencies:
 
-- Python, Numpy, Scikit-learn & Pandas
-- For training and testing the CNN, Caffe needs to be compiled for Python
+Dependencies can be installed with:
+
+~~~~
+pip install requirements.txt
+~~~~
+
+Caffe needs to be compiled (from master branch), including PYTHON wrapper `make pycaffe`
 
 ## Instructions for use:
 
@@ -141,4 +146,6 @@ python predict_new.py -m 0
 ~~~~
 
 5. The predictions will be output to `'data/images/predictions.txt'`
+
+See more [here](../data/images/readme.md)
 

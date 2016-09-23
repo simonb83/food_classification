@@ -19,18 +19,22 @@ MODEL = "model/_iter_5000.caffemodel"
 MEAN = "data/alexnet_4_mean.npy"
 caffe.set_mode_gpu()
 
-image_list = []
-with open("/data/test.txt", "r") as f:
-    test_images = f.read().splitlines()
+if __name__ == "__main__":
 
-for im in test_images:
-    image_list.append(im.split(" ")[0])
+    image_list = []
+    with open("/data/test.txt", "r") as f:
+        test_images = f.read().splitlines()
 
-#Initialize net and data transformer
-net, transformer = predict.initialize_model(DEPLOY, "model/_iter_5000.caffemodel", "data/alexnet_4_mean.npy")
+    for im in test_images:
+        image_list.append(im.split(" ")[0])
 
-#Make predictions
-predictions = predict.predict_images(image_list, net, transformer, p='data/resized')
+    # Initialize net and data transformer
+    net, transformer = predict.initialize_model(
+        DEPLOY, "model/_iter_5000.caffemodel", "data/alexnet_4_mean.npy")
 
-#Dump predictions
-predictions.dump("data/predictions")
+    # Make predictions
+    predictions = predict.predict_images(
+        image_list, net, transformer, p='data/resized')
+
+    # Dump predictions
+    predictions.dump("data/predictions")

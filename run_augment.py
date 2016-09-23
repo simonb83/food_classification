@@ -18,6 +18,7 @@ import skimage.exposure as exposure
 import skimage.transform as transform
 import re
 
+
 def save_image(img, image_name, operation):
     """
     Save image and its mirror image
@@ -30,6 +31,7 @@ def save_image(img, image_name, operation):
     io.imsave(os.path.join("data/augmented", new_name), img)
     io.imsave(os.path.join(image_out, mirror_name), np.fliplr(img))
     return new_name, mirror_name
+
 
 def augment_image(x):
     """
@@ -46,10 +48,10 @@ def augment_image(x):
     full_image_name = re.findall(r'\/(.+)', im_path)[0]
     image_name = re.findall(r'(\d+)\.', full_image_name)[0]
 
-    #Load the image
+    # Load the image
     img = io.imread(os.path.join("data/augmented", im_path))
 
-    #Save the original image
+    # Save the original image
     n1, n2 = save_image(img, image_name, '')
     augmented_images.append(n1 + label)
     augmented_images.append(n2 + label)
@@ -67,38 +69,38 @@ def augment_image(x):
 
     return augmented_images
 
+if __name__ == "__main__":
 
-train_images = "data/train.txt"
-val_images = "data/val.txt"
+    train_images = "data/train.txt"
+    val_images = "data/val.txt"
 
-if not os.path.exists("data/augmented"):
-    os.makedirs("data/augmented")
+    if not os.path.exists("data/augmented"):
+        os.makedirs("data/augmented")
 
-with open(train_images, "r") as f:
-    train_image_list = f.read().splitlines()
+    with open(train_images, "r") as f:
+        train_image_list = f.read().splitlines()
 
-with open(val_images, "r") as f:
-    val_image_list = f.read().splitlines()
+    with open(val_images, "r") as f:
+        val_image_list = f.read().splitlines()
 
-new_train_image_list = []
-new_val_image_list = []
+    new_train_image_list = []
+    new_val_image_list = []
 
-for x in train_image_list:
-    x_augmented = augment_image(x)
-    for a in x_augmented:
-        new_train_image_list.append(a)
+    for x in train_image_list:
+        x_augmented = augment_image(x)
+        for a in x_augmented:
+            new_train_image_list.append(a)
 
-for x in val_image_list:
-    x_augmented = augment_image(x)
-    for a in x_augmented:
-        new_val_image_list.append(a)
+    for x in val_image_list:
+        x_augmented = augment_image(x)
+        for a in x_augmented:
+            new_val_image_list.append(a)
 
-np.random.shuffle(new_train_image_list)
-np.random.shuffle(new_val_image_list)
+    np.random.shuffle(new_train_image_list)
+    np.random.shuffle(new_val_image_list)
 
-with open("data/augmented_train.txt", "w") as f:
-    f.write("\n".join(new_train_image_list))
+    with open("data/augmented_train.txt", "w") as f:
+        f.write("\n".join(new_train_image_list))
 
-with open("data/augmented_val.txt", "w") as f:
-    f.write("\n".join(new_val_image_list))
-
+    with open("data/augmented_val.txt", "w") as f:
+        f.write("\n".join(new_val_image_list))
